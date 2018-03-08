@@ -8,6 +8,7 @@ ite_done = 0
 iteration_read = 1  # 1 for reading the number of iteration from the file
 #iteration_read = 0
 phi_new = 1 # 1 for reading the cp ref and calculating the new phi
+#phi_new = 0
 cp_ens =0
 b_obs_ens =0
 cp_ens_1d = 0
@@ -137,11 +138,11 @@ for traj in range(trajt):
     A[:,0] = cp_1d[:,Ns]
     AT = np.transpose(A)
     covar_1[:,:] = np.matmul(B,AT)
-    print 'cov', covar_1
+#    print 'cov', covar_1
     covar_1time = covar_1time + covar_1
-  print 'cp', cp_1d
-  print 'b_obs', b_obs_1d
-  print 'covar_1', covar_1time
+#  print 'cp', cp_1d
+#  print 'b_obs', b_obs_1d
+#  print 'covar_1', covar_1time
   
 #    print 'sample completed', Ns    
 #  print 'Completed traj', traj
@@ -173,14 +174,14 @@ for traj in range(trajt):
   b_obs_error = b_obs_error + b_obs_sq
 
   covar_1time = covar_1time/(Nsample)
-  print 'covar_1_time', covar_1time
+#  print 'covar_1_time', covar_1time
   covar_1sq = np.square(covar_1time)
   covar_1_ens = covar_1_ens + covar_1time
-  print 'covar_1_ens', covar_1_ens 
+#  print 'covar_1_ens', covar_1_ens 
 #  covar_1_ens_sq = np.square(covar_1_ens)
-  print 'sq', covar_1_ens
+#  print 'sq', covar_1_ens
   covar_1_error = covar_1_error + covar_1sq
-  print 'Completed traj', traj, covar_1_error
+  print 'Completed traj', traj#, covar_1_error
   print '-----------------------------------'
 print '##################################################################'
 #  print cp
@@ -257,7 +258,7 @@ covar_2_mag = np.zeros((arg,arg))
 for nu in range (arg):
   for mu in range (arg):
     covar_2[nu,mu] = (b_obs_ens_1d[nu]) *( cp_ens_1d[mu])
-    print 'covar2', covar_2[nu,mu], cp_ens_1d[mu], b_obs_ens_1d[nu]
+#    print 'covar2', covar_2[nu,mu], cp_ens_1d[mu], b_obs_ens_1d[nu]
     covar_2_error1 = b_obs_error[nu]/b_obs_ens_1d[nu]
     covar_2_error1 = np.square(covar_2_error1)
     covar_2_error2 = cp_error[mu]/cp_ens_1d[mu]
@@ -267,15 +268,15 @@ for nu in range (arg):
 covar_2_mag = np.square(covar_2)
 covar_2_mag = np.sqrt(covar_2_mag)
 covar_2_error = covar_2_mag * covar_2_error     
-print 'co2', covar_2
-print 'covar_2 error', covar_2_error
+#print 'co2', covar_2
+#print 'covar_2 error', covar_2_error
 covar_final = k_bT*np.subtract(covar_1_ens[:],covar_2[:])
 covar_1_error = np.square(covar_1_error)
 covar_2_error = np.square(covar_2_error)
 covar_error = k_bT*(covar_1_error + covar_2_error)
 covar_error = np.sqrt(covar_error)
-print 'covar_final', covar_final
-print 'covar_error', covar_error
+#print 'covar_final', covar_final
+#print 'covar_error', covar_error
 #print 'final', covar_final
 
 #### Inverse of covariance matrix
@@ -302,7 +303,7 @@ if iteration_read == 1:
 f_ite = open("iteration_number.txt","w")
 f_ite.write("%i"%iteration)
 f_ite.close()
-fcpi = open("contprob_itera.txt","a+")
+fcpi = open("contprob_ite.txt","a+")
 fcpi.write("Iteration number %i\n"%iteration)
 fcpi.write("Contact Probability")
 fcpi.write("\n")
@@ -321,7 +322,7 @@ fcpi.write("\n")
 fcpi.write("\n")
 fcpi.close()
 
-fcpi = open("contprob_itera_1d.txt","a+")
+fcpi = open("contprob_1d_ite.txt","a+")
 fcpi.write("Iteration number %i\n"%iteration)
 for argr in range (arg):
   fcpi.write("%i\t%f\t%f\n"%(argr+1,cp_ens_1d[argr],cp_error[argr]))
@@ -397,8 +398,8 @@ if phi_new == 1:
   rmsd = rmsd/rmsd_de
   rmsd = np.sqrt(rmsd)
   rmsd = rmsd * 100
-  print 'rmsd', rmsd
-  f_rmsd = open("error_imc.txt","a+")
+#  print 'rmsd', rmsd
+  f_rmsd = open("error_ite.txt","a+")
   f_rmsd.write("Iteration number %i\n"%iteration)
   f_rmsd.write("Percentage Error = %f\n"%rmsd )
   f_rmsd.write("\n")
@@ -443,7 +444,7 @@ if phi_new == 1:
 #  print 'cp', cp_time_1d 
 #########
   delta_cp =np.subtract(cp_ref_1d[:],cp_ens_1d[:])
-  print 'cp_new', cp_ens_1d
+#  print 'cp_new', cp_ens_1d
   delta_cp_error1 = np.square(cp_error)
   delta_cp_error2 = np.square(cp_ref_error_1d)
   delta_cp_error = delta_cp_error1 + delta_cp_error2
@@ -456,13 +457,13 @@ if phi_new == 1:
 #  print 'phi_dummy',phi_dummy
 #  print 'covar',covar_final
   phi_new_1d = np.linalg.solve(covar_final,delta_cp)
-  print 'phi_new',phi_new_1d
+#  print 'phi_new',phi_new_1d
   phi_error1 =  np.matmul(covar_error,phi_new_1d)
-  print 'phi_err1', phi_error1
+#  print 'phi_err1', phi_error1
 #  print 'phi_without', phi_new_1d
   phi_error1 = np.subtract(delta_cp_error,phi_error1)
   phi_error_1d = np.linalg.solve(covar_final,phi_error1)
-  print 'phi_error', phi_error_1d
+#  print 'phi_error', phi_error_1d
   phi_new_1d = phi_new_1d + phi_old_1d
   print 'phi', phi_new_1d
 #  phi_new_1d = np.dot(covar_inv,delta_cp)
@@ -483,29 +484,32 @@ if phi_new == 1:
       phi_error[mu,nu] = phi_error[nu,mu]
       argr = argr +1
   f_ite = open("phi_ite.txt","a+")
-  f_ite.write("Iteration number = %i\n"%iteration)
-  for nu in range (NBeads):
-    for mu in range (NBeads):
-      f_ite.write("%f\t" %(phi_new[nu,mu]))
-    f_ite.write("\n")
-  f_ite.write("\n")
-  f_ite.write("Error in phi\n")
-  for nu in range (NBeads):
-    for mu in range (NBeads):
-      f_ite.write("%f\t" %(phi_error[nu,mu]))
-    f_ite.write("\n")
+#  f_ite.write("Iteration number = %i\n"%iteration)
+#  for nu in range (NBeads):
+#    for mu in range (NBeads):
+#      f_ite.write("%f\t" %(phi_new[nu,mu]))
+#    f_ite.write("\n")
+#  f_ite.write("\n")
+#  f_ite.write("Error in phi\n")
+#  for nu in range (NBeads):
+#    for mu in range (NBeads):
+#      f_ite.write("%f\t" %(phi_error[nu,mu]))
+#    f_ite.write("\n")
+#  f_ite.write("\n")
+  for argr in range(arg):
+    f_ite.write("%f\t"%(phi_new_1d[argr]))
   f_ite.write("\n")
   f_ite.close()
 
-  f_1d = open("phi_ite_1d.txt","a+")
+  f_1d = open("phi_1d_ite.txt","a+")
+  f_1d.write("Iteration number = %i\n"%iteration)
   for argr in range(arg):
-    f_1d.write("Iteration number = %i\n"%iteration)
     f_1d.write("%i\t%f\t%f\n"%(argr+1,phi_new_1d[argr],phi_error_1d[argr]))
   f_1d.write("\n")
   f_1d.close()
 
 
-  print 'phi', phi_new
+#  print 'phi', phi_new
   file = open("phi.txt","w")
   for nu in range (NBeads):
     for mu in range (NBeads):
